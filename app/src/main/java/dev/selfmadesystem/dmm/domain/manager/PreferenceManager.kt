@@ -19,7 +19,7 @@ class PreferenceManager(context: Context) :
             Environment.DIRECTORY_DOWNLOADS
         ).resolve("VendettaManager").also { it.mkdirs() }).resolve("vendetta.apk")
 
-    var packageName by stringPreference("package_name", "dev.selfmadesystem.mod")
+    var packageName by stringPreference("package_name", "dev.selfmadesystem.discord")
 
     var appName by stringPreference("app_name", "Vendetta")
 

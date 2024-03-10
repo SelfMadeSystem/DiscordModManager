@@ -50,7 +50,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="dev.selfmadesystem.mod.actions.INSTALL" />
+                <action android:name="dev.selfmadesystem.dmm.actions.INSTALL" />
                 <category android:name="android.intent.category.OPENABLE" />
             </intent-filter>
         </activity>
