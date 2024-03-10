@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="app_name">Vendetta Manager</string>
+    <string name="app_name">Discord Mod Manager</string>
 
     <string name="cd_library_author">Author: %1$s</string>
     <string name="cd_library_license">License: %1$s</string>
@@ -14,7 +14,7 @@
     <string name="msg_loading">Loading…</string>
     <string name="msg_downgrade">Cannot downgrade, try uninstalling first</string>
     <string name="msg_unlocked">You are now a developer</string>
-    <string name="msg_permission_grant">In order for Vendetta Manager to function, file permissions are required. Since shared data is stored in ~/Vendetta, permissions are required in order to access it.</string>
+    <string name="msg_permission_grant">In order for Discord Mod Manager to function, file permissions are required. Since shared data is stored in ~/DMM, permissions are required in order to access it.</string>
     <string name="msg_shizuku_denied">Failed to obtain Shizuku permissions</string>
     <string name="msg_change_mirror">Would you like to try again using a download mirror?</string>
     <string name="msg_invalid_apk">APK was corrupted, try clearing cache then reinstalling</string>
@@ -125,7 +125,7 @@
     <string name="settings_check_updates">Check for Discord updates</string>
 
     <string name="settings_customization">Customization</string>
-    <string name="settings_customization_description">Customize your Vendetta install</string>
+    <string name="settings_customization_description">Customize your Discord install</string>
     <string name="settings_app_name">App name</string>
     <string name="settings_app_icon">Replace app icon</string>
     <string name="settings_app_icon_description">Uses the Vendetta icon instead of Discord\'s</string>

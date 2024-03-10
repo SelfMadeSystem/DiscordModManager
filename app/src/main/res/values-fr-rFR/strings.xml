@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="app_name">Gestionnaire de Vendetta</string>
+    <string name="app_name">Gestionnaire de Mod Discord</string>
     <string name="cd_library_author">Author: %1$s</string>
     <string name="cd_library_license">License: %1$s</string>
     <string name="msg_cleared_cache">Le cache a été supprimé avec succès</string>
@@ -13,7 +13,7 @@
     <string name="msg_loading">Chargement en cours…</string>
     <string name="msg_downgrade">Impossible de revenir à la version ultérieure, essayez d\'abord de la désinstaller puis réessayez</string>
     <string name="msg_unlocked">Vous êtes maintenant un développeur</string>
-    <string name="msg_permission_grant">Pour que le Gestionnaire de Vendetta fonctionne correctement, la permission de stockage de fichier est requise. Les fichiers sont stockés dans le dossier Vendetta, des autorisations sont nécessaires pour y accéder.</string>
+    <string name="msg_permission_grant">Pour que le Gestionnaire de Mod Discord fonctionne correctement, la permission de stockage de fichier est requise. Les fichiers sont stockés dans le dossier ~/DMM, des autorisations sont nécessaires pour y accéder.</string>
     <string name="msg_shizuku_denied">Failed to obtain Shizuku permissions</string>
     <string name="msg_change_mirror">Voulez-vous réessayer en utilisant un autre serveur de téléchargement ?</string>
     <string name="msg_invalid_apk">L\'APK a été corrompu, essayez de vider le cache puis de réinstaller</string>
@@ -109,7 +109,7 @@
     <string name="settings_theme">Thème</string>
     <string name="settings_check_updates">Vérifier les mises à jour pour Discord</string>
     <string name="settings_customization">Personnalisation</string>
-    <string name="settings_customization_description">Personnalisez votre installation de Vendetta</string>
+    <string name="settings_customization_description">Personnalisez votre installation de Discord</string>
     <string name="settings_app_name">Nom de l\'appli</string>
     <string name="settings_app_icon">Remplacer l\'icône de l\'appli</string>
     <string name="settings_app_icon_description">Utiliser l\'icône de Vendetta au lieu de celle de Discord</string>

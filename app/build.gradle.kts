@@ -1,4 +1,3 @@
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 import java.io.ByteArrayOutputStream
 
 plugins {
@@ -9,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "dev.beefers.vendetta.manager"
+    namespace = "dev.selfmadesystem.dmm"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "dev.beefers.vendetta.manager"
+        applicationId = "dev.selfmadesystem.dmm"
         minSdk = 28
         targetSdk = 34
         versionCode = 1122
@@ -146,7 +145,7 @@ fun exec(vararg command: String): String? {
             isIgnoreExitValue = true
         }
 
-        if(errout.size() > 0)
+        if (errout.size() > 0)
             throw Error(errout.toString(Charsets.UTF_8))
 
         stdout.toString(Charsets.UTF_8).trim()
