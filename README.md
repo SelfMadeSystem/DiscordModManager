@@ -29,6 +29,11 @@ Easily install Discord Mods on Android
 
 </div>
 
+Based on [VendettaManager](https://github.com/vendetta-mod/VendettaManager)
+
+> [!NOTE]
+> This isn't a fork of the project because GitHub didn't let me despite me trying four (4) times. I had to create a new repository and copy the files over.
+
 Build
 ---
 
