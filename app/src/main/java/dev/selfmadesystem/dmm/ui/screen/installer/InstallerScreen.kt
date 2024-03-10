@@ -151,7 +151,7 @@ class InstallerScreen(
                         viewModel.runner.currentStep?.status == StepStatus.SUCCESSFUL
                     if (installSuccessful) {
                         Button(
-                            onClick = { viewModel.launchVendetta() },
+                            onClick = { viewModel.launchDiscord() },
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(stringResource(R.string.action_launch))

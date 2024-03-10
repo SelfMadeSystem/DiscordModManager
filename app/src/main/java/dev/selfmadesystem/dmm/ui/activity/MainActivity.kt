@@ -16,7 +16,7 @@ import dev.selfmadesystem.dmm.domain.manager.PreferenceManager
 import dev.selfmadesystem.dmm.installer.shizuku.ShizukuPermissions
 import dev.selfmadesystem.dmm.ui.screen.home.HomeScreen
 import dev.selfmadesystem.dmm.ui.screen.installer.InstallerScreen
-import dev.selfmadesystem.dmm.ui.theme.VendettaManagerTheme
+import dev.selfmadesystem.dmm.ui.theme.DMMTheme
 import dev.selfmadesystem.dmm.utils.DiscordVersion
 import dev.selfmadesystem.dmm.utils.Intents
 import kotlinx.coroutines.launch
@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            VendettaManagerTheme {
+            DMMTheme {
                 Navigator(screen) {
                     SlideTransition(it)
                 }

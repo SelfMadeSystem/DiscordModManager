@@ -14,7 +14,7 @@ import dev.selfmadesystem.dmm.domain.manager.Theme
 import org.koin.androidx.compose.get
 
 @Composable
-fun VendettaManagerTheme(
+fun DMMTheme(
     content: @Composable () -> Unit
 ) {
     val prefs = get<PreferenceManager>()

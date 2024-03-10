@@ -68,7 +68,7 @@ class HomeViewModel(
         }
     }
 
-    fun launchVendetta() {
+    fun launchDiscord() {
         installManager.current?.let {
             val intent = context.packageManager.getLaunchIntentForPackage(it.packageName)?.apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -77,11 +77,11 @@ class HomeViewModel(
         }
     }
 
-    fun uninstallVendetta() {
+    fun uninstallDiscord() {
         installManager.uninstall()
     }
 
-    fun launchVendettaInfo() {
+    fun launchDiscordInfo() {
         installManager.current?.let {
             Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

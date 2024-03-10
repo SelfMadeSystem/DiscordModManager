@@ -92,7 +92,7 @@ class InstallerViewModel(
         expandedGroup = group
     }
 
-    fun launchVendetta() {
+    fun launchDiscord() {
         installManager.current?.let {
             val intent = context.packageManager.getLaunchIntentForPackage(it.packageName)?.apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -133,7 +133,7 @@ class InstallerViewModel(
             .setStream(uri)
             .apply {
                 intent.apply {
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
             }
             .startChooser()
