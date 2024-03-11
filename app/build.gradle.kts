@@ -15,7 +15,7 @@ android {
         applicationId = "dev.selfmadesystem.dmm"
         minSdk = 28
         targetSdk = 34
-        versionCode = 1
+        versionCode = 100
         versionName = "0.1.0"
 
         buildConfigField("String", "GIT_BRANCH", "\"${getCurrentBranch()}\"")

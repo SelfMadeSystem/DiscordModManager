@@ -26,6 +26,9 @@ abstract class BasePreferenceManager(
     private fun getFile(key: String, defaultValue: File) =
         File(getString(key, defaultValue.absolutePath))
 
+    private fun getStringSet(key: String, defaultValue: Set<String>) =
+        prefs.getStringSet(key, defaultValue)!!
+
     protected inline fun <reified E : Enum<E>> getEnum(key: String, defaultValue: E) =
         enumValueOf<E>(getString(key, defaultValue.name))
 
@@ -38,6 +41,9 @@ abstract class BasePreferenceManager(
 
     private fun putFile(key: String, value: File) =
         putString(key, value.absolutePath)
+
+    private fun putStringSet(key: String, value: Set<String>) =
+        prefs.edit { putStringSet(key, value) }
 
     protected inline fun <reified E : Enum<E>> putEnum(key: String, value: E) =
         putString(key, value.name)
@@ -117,6 +123,16 @@ abstract class BasePreferenceManager(
         defaultValue = defaultValue,
         getter = ::getFile,
         setter = ::putFile
+    )
+
+    protected fun stringSetPreference(
+        key: String,
+        defaultValue: Set<String>
+    ) = Preference(
+        key = key,
+        defaultValue = defaultValue,
+        getter = ::getStringSet,
+        setter = ::putStringSet
     )
 
     protected inline fun <reified E : Enum<E>> enumPreference(

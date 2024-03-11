@@ -222,14 +222,17 @@ class HomeScreen : Screen {
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)
     private fun TitleBar() {
-        val profiles = listOf(
-            "Profile 1",
-            "Profile 2",
-            "Create new profile"
-        )
-        var selectedProfile by remember { mutableIntStateOf(0) }
+        val prefs: PreferenceManager = get()
+        val profiles by remember {
+            mutableStateOf(
+                prefs.profiles.toList().sortedBy {
+                    it.split(":", limit = 2)[0].toInt()
+                } + ":Create Profile..."
+            )
+        } // TODO: Add string resource
+        var selectedProfile by remember { mutableIntStateOf(prefs.currentProfile) }
         var expanded by remember { mutableStateOf(false) }
-        var navigation = LocalNavigator.currentOrThrow
+        val navigation = LocalNavigator.currentOrThrow
 
         TopAppBar(
             title = {
@@ -247,7 +250,7 @@ class HomeScreen : Screen {
                             modifier = Modifier.size(24.dp)
                         )
                         Text(
-                            text = profiles[selectedProfile],
+                            text = profiles[selectedProfile].split(":", limit = 2)[1],
                             modifier = Modifier.padding(start = 8.dp)
                         )
                     }
@@ -258,13 +261,16 @@ class HomeScreen : Screen {
                     ) {
                         profiles.forEachIndexed { index, profile ->
                             DropdownMenuItem(
-                                text = { Text(text = profile) },
+                                text = { Text(text = profile.split(":", limit = 2)[1]) },
                                 onClick = {
+                                    assert(index < profiles.size)
+                                    assert(index >= 0)
                                     if (index == profiles.size - 1) {
+                                        prefs.addProfile("New Profile")
                                         navigation.navigate(SettingsScreen())
-                                        return@DropdownMenuItem
                                     }
                                     selectedProfile = index
+                                    prefs.currentProfile = index
                                     expanded = false
                                 }
                             )

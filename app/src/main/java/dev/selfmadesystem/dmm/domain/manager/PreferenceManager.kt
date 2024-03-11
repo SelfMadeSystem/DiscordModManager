@@ -1,6 +1,7 @@
 package dev.selfmadesystem.dmm.domain.manager
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Environment
 import androidx.annotation.StringRes
@@ -10,7 +11,33 @@ import dev.selfmadesystem.dmm.utils.DiscordVersion
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-class PreferenceManager(context: Context) :
+class ProfileManager(context: Context, pref: SharedPreferences) : BasePreferenceManager(pref) {
+    val DEFAULT_MODULE_LOCATION =
+        (context.externalCacheDir ?: File(
+            Environment.getExternalStorageDirectory(),
+            Environment.DIRECTORY_DOWNLOADS
+        ).resolve("DiscordModManager").also { it.mkdirs() }).resolve("mod-module.apk")
+
+    // Discord mod
+    var packageName by stringPreference("package_name", "dev.pylix.bunny")
+    var appName by stringPreference("app_name", "Bunny")
+    var appIcon by filePreference("appIcon", File(""))
+    var channel by enumPreference("channel", DiscordVersion.Type.STABLE)
+    var discordVersion by stringPreference("discord_version", "")
+    var moduleVersion by stringPreference("module_version", "")
+    var debuggable by booleanPreference("debuggable", false)
+    var moduleUrl by stringPreference("module_url", "")
+    var moduleLocation by filePreference("module_location", File(""))
+    var installMethod by enumPreference("install_method", InstallMethod.DEFAULT)
+
+    // Theme and misc mod manager related
+    var monet by booleanPreference("monet", Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+    var autoClearCache by booleanPreference("auto_clear_cache", true)
+    var theme by enumPreference("theme", Theme.SYSTEM)
+    var updateDuration by enumPreference("update_duration", UpdateCheckerDuration.HOURLY)
+}
+
+class PreferenceManager(var context: Context) :
     BasePreferenceManager(context.getSharedPreferences("prefs", Context.MODE_PRIVATE)) {
 
     val DEFAULT_MODULE_LOCATION =
@@ -52,6 +79,51 @@ class PreferenceManager(context: Context) :
     var logsAlternateBackground by booleanPreference("logs_alternate_bg", true)
 
     var logsLineWrap by booleanPreference("logs_line_wrap", false)
+
+    var profiles by stringSetPreference("profiles", setOf("0:Bunny"))
+
+    var currentProfile by intPreference("current_profile", 0)
+
+    private var profileManagers = mutableMapOf<String, ProfileManager>()
+
+    fun getProfileManager(profile: Int) = run {
+        profileManagers.getOrPut(profile.toString()) {
+            ProfileManager(
+                context,
+                context.getSharedPreferences("profile_$profile", Context.MODE_PRIVATE)
+            )
+        }
+    }
+
+    fun getCurrentProfileManager() = getProfileManager(currentProfile)
+
+    fun getProfileIdName(profileIdx: Int) = profiles.find { it.startsWith("$profileIdx:") }
+        ?: throw IllegalArgumentException("Profile not found")
+
+    fun getProfileName(profileIdx: Int) = getProfileIdName(profileIdx).split(":", limit = 2)[1]
+
+    fun getCurrentProfileIdName() = getProfileIdName(currentProfile)
+
+    fun getCurrentProfileName() = getProfileName(currentProfile)
+
+    fun setProfileName(profileIdx: Int, name: String) {
+        profiles = profiles.toMutableSet().apply {
+            remove(getProfileIdName(profileIdx))
+            add("$profileIdx:$name")
+        }
+    }
+
+    fun setCurrentProfileName(name: String) {
+        setProfileName(currentProfile, name)
+    }
+
+    fun addProfile(name: String) {
+        println("Hello. New profile: $name")
+        profiles = profiles.toMutableSet().apply {
+            add("${profiles.size}:$name")
+        }
+        println("Profiles: $profiles")
+    }
 
     init {
         // Will be removed next update

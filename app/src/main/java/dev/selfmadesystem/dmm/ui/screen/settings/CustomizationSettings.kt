@@ -38,7 +38,10 @@ class CustomizationSettings : Screen {
     override fun Content() {
         val ctx = LocalContext.current
         val prefs: PreferenceManager = get()
+        val currentProfileName = prefs.getCurrentProfileName()
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+        println("Current profile: $currentProfileName ${prefs.currentProfile} ${prefs.profiles}")
 
         Scaffold(
             topBar = { TitleBar(scrollBehavior) },
@@ -51,6 +54,14 @@ class CustomizationSettings : Screen {
                     .verticalScroll(rememberScrollState())
                     .padding(bottom = DimenUtils.navBarPadding)
             ) {
+                SettingsTextField(
+                    label = "Profile Name", // TODO: stringResource(R.string.settings_app_name),
+                    pref = currentProfileName,
+                    onPrefChange = {
+                        prefs.setCurrentProfileName(it)
+                    }
+                )
+
                 SettingsTextField(
                     label = stringResource(R.string.settings_app_name),
                     pref = prefs.appName,
