@@ -248,12 +248,12 @@ class HomeScreen : Screen {
                         modifier = Modifier.padding(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing)
                     ) {
-                        Text(
-                            text = profiles[selectedProfile].split(":", limit = 2)[1]
-                        )
                         val iconRotation by animateFloatAsState(
                             if (expanded) -180f else 0f,
                             label = "Icon Rotation"
+                        )
+                        Text(
+                            text = profiles[selectedProfile].split(":", limit = 2)[1]
                         )
                         Icon(
                             imageVector = Icons.Outlined.ExpandMore,
