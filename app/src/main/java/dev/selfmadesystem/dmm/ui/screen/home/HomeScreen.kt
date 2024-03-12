@@ -1,6 +1,7 @@
 package dev.selfmadesystem.dmm.ui.screen.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
@@ -14,13 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
@@ -41,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -242,16 +245,22 @@ class HomeScreen : Screen {
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier.padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing)
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.AccountCircle,
-                            contentDescription = "Profile Icon",
-                            modifier = Modifier.size(24.dp)
-                        )
                         Text(
-                            text = profiles[selectedProfile].split(":", limit = 2)[1],
-                            modifier = Modifier.padding(start = 8.dp)
+                            text = profiles[selectedProfile].split(":", limit = 2)[1]
+                        )
+                        val iconRotation by animateFloatAsState(
+                            if (expanded) -180f else 0f,
+                            label = "Icon Rotation"
+                        )
+                        Icon(
+                            imageVector = Icons.Outlined.ExpandMore,
+                            contentDescription = "Arrow Icon",
+                            modifier = Modifier
+                                .size(24.dp)
+                                .rotate(iconRotation)
                         )
                     }
 
