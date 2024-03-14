@@ -10,10 +10,13 @@ import java.io.File
 import kotlin.reflect.KProperty
 
 abstract class BasePreferenceManager(
-    private val prefs: SharedPreferences
+    protected val prefs: SharedPreferences
 ) {
     protected fun getString(key: String, defaultValue: String?) =
         prefs.getString(key, defaultValue)!!
+
+    protected fun getStringOrNull(key: String, defaultValue: String?) =
+        prefs.getString(key, defaultValue)
 
     private fun getBoolean(key: String, defaultValue: Boolean) = prefs.getBoolean(key, defaultValue)
     private fun getInt(key: String, defaultValue: Int) = prefs.getInt(key, defaultValue)

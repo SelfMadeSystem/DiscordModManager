@@ -1,44 +1,196 @@
 package dev.selfmadesystem.dmm.domain.manager
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Build
 import android.os.Environment
 import androidx.annotation.StringRes
 import dev.selfmadesystem.dmm.R
 import dev.selfmadesystem.dmm.domain.manager.base.BasePreferenceManager
 import dev.selfmadesystem.dmm.utils.DiscordVersion
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.PairSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-class ProfileManager(context: Context, pref: SharedPreferences) : BasePreferenceManager(pref) {
-    val DEFAULT_MODULE_LOCATION =
-        (context.externalCacheDir ?: File(
-            Environment.getExternalStorageDirectory(),
-            Environment.DIRECTORY_DOWNLOADS
-        ).resolve("DiscordModManager").also { it.mkdirs() }).resolve("mod-module.apk")
+@Serializable
+data class ProfileManager(
+    var version: Int = 1,
 
     // Discord mod
-    var packageName by stringPreference("package_name", "dev.pylix.bunny")
-    var appName by stringPreference("app_name", "Bunny")
-    var appIcon by filePreference("appIcon", File(""))
-    var channel by enumPreference("channel", DiscordVersion.Type.STABLE)
-    var discordVersion by stringPreference("discord_version", "")
-    var moduleVersion by stringPreference("module_version", "")
-    var debuggable by booleanPreference("debuggable", false)
-    var moduleUrl by stringPreference("module_url", "")
-    var moduleLocation by filePreference("module_location", File(""))
-    var installMethod by enumPreference("install_method", InstallMethod.DEFAULT)
+    var packageName: String = "dev.selfmadesystem.bunny",
+    var appName: String = "Bunny",
+    var appIconFileName: String = "bunny",
+    var channel: DiscordVersion.Type = DiscordVersion.Type.STABLE,
+    var discordVersion: String = "",
+    var moduleVersion: String = "",
+    var debuggable: Boolean = false,
+    var moduleGetStrategy: ModuleGetStrategy = ModuleGetStrategy.Url("https://raw.githubusercontent.com/pyoncord/detta-builds/main/bunny.js"),
+    var installMethod: InstallMethod = InstallMethod.DEFAULT,
 
     // Theme and misc mod manager related
-    var monet by booleanPreference("monet", Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-    var autoClearCache by booleanPreference("auto_clear_cache", true)
-    var theme by enumPreference("theme", Theme.SYSTEM)
-    var updateDuration by enumPreference("update_duration", UpdateCheckerDuration.HOURLY)
+    var monet: Boolean = false,
+    var autoClearCache: Boolean = true,
+    var theme: Theme = Theme.SYSTEM,
+    var updateDuration: UpdateCheckerDuration = UpdateCheckerDuration.HOURLY,
+)
+
+class ProfileManagerSerializer : KSerializer<ProfileManager> {
+    override val descriptor = ProfileManager.serializer().descriptor
+    override fun serialize(encoder: Encoder, value: ProfileManager) {
+        val composite = encoder.beginStructure(descriptor)
+        composite.encodeIntElement(descriptor, 0, value.version)
+        composite.encodeStringElement(descriptor, 1, value.packageName)
+        composite.encodeStringElement(descriptor, 2, value.appName)
+        composite.encodeStringElement(descriptor, 3, value.appIconFileName)
+        composite.encodeSerializableElement(
+            descriptor,
+            4,
+            DiscordVersion.Type.serializer(),
+            value.channel
+        )
+        composite.encodeStringElement(descriptor, 5, value.discordVersion)
+        composite.encodeStringElement(descriptor, 6, value.moduleVersion)
+        composite.encodeBooleanElement(descriptor, 7, value.debuggable)
+        composite.encodeSerializableElement(
+            descriptor,
+            8,
+            ModuleGetStrategy.serializer(),
+            value.moduleGetStrategy
+        )
+        composite.encodeSerializableElement(
+            descriptor,
+            9,
+            InstallMethod.serializer(),
+            value.installMethod
+        )
+        composite.encodeBooleanElement(descriptor, 10, value.monet)
+        composite.encodeBooleanElement(descriptor, 11, value.autoClearCache)
+        composite.encodeSerializableElement(descriptor, 12, Theme.serializer(), value.theme)
+        composite.encodeSerializableElement(
+            descriptor,
+            13,
+            UpdateCheckerDuration.serializer(),
+            value.updateDuration
+        )
+        composite.endStructure(descriptor)
+    }
+
+    override fun deserialize(decoder: Decoder): ProfileManager {
+        val composite = decoder.beginStructure(descriptor)
+        var version = 1
+        var packageName = "dev.selfmadesystem.bunny"
+        var appName = "Bunny"
+        var appIconFileName = "bunny"
+        var channel = DiscordVersion.Type.STABLE
+        var discordVersion = ""
+        var moduleVersion = ""
+        var debuggable = false
+        var moduleGetStrategy: ModuleGetStrategy =
+            ModuleGetStrategy.Url("https://raw.githubusercontent.com/pyoncord/detta-builds/main/bunny.js")
+        var installMethod = InstallMethod.DEFAULT
+        var monet = false
+        var autoClearCache = true
+        var theme = Theme.SYSTEM
+        var updateDuration = UpdateCheckerDuration.HOURLY
+        while (true) {
+            when (composite.decodeElementIndex(descriptor)) {
+                CompositeDecoder.DECODE_DONE -> break
+                0 -> version = composite.decodeIntElement(descriptor, 0)
+                1 -> packageName = composite.decodeStringElement(descriptor, 1)
+                2 -> appName = composite.decodeStringElement(descriptor, 2)
+                3 -> appIconFileName = composite.decodeStringElement(descriptor, 3)
+                4 -> channel = composite.decodeSerializableElement(
+                    descriptor,
+                    4,
+                    DiscordVersion.Type.serializer()
+                )
+
+                5 -> discordVersion = composite.decodeStringElement(descriptor, 5)
+                6 -> moduleVersion = composite.decodeStringElement(descriptor, 6)
+                7 -> debuggable = composite.decodeBooleanElement(descriptor, 7)
+                8 -> moduleGetStrategy = composite.decodeSerializableElement(
+                    descriptor,
+                    8,
+                    ModuleGetStrategy.serializer()
+                )
+
+                9 -> installMethod =
+                    composite.decodeSerializableElement(descriptor, 9, InstallMethod.serializer())
+
+                10 -> monet = composite.decodeBooleanElement(descriptor, 10)
+                11 -> autoClearCache = composite.decodeBooleanElement(descriptor, 11)
+                12 -> theme =
+                    composite.decodeSerializableElement(descriptor, 12, Theme.serializer())
+
+                13 -> updateDuration = composite.decodeSerializableElement(
+                    descriptor,
+                    13,
+                    UpdateCheckerDuration.serializer()
+                )
+            }
+        }
+        composite.endStructure(descriptor)
+        return ProfileManager(
+            version,
+            packageName,
+            appName,
+            appIconFileName,
+            channel,
+            discordVersion,
+            moduleVersion,
+            debuggable,
+            moduleGetStrategy,
+            installMethod,
+            monet,
+            autoClearCache,
+            theme,
+            updateDuration
+        )
+    }
 }
 
 class PreferenceManager(var context: Context) :
     BasePreferenceManager(context.getSharedPreferences("prefs", Context.MODE_PRIVATE)) {
+
+    protected fun profileManagersPreference(
+        key: String,
+        defaultValue: List<Pair<String, ProfileManager>> = emptyList()
+    ) = Preference(
+        key = key,
+        defaultValue = defaultValue,
+        getter = { key, defaultValue ->
+            getStringOrNull(key, null)?.let {
+                val serializer = ProfileManagerSerializer()
+                val pairSerializer = PairSerializer(String.serializer(), serializer)
+                val listPairSerializer = ListSerializer(pairSerializer)
+                val decoder = Json {
+                    serializersModule = SerializersModule {
+                        contextual(ProfileManager::class, serializer)
+                    }
+                }
+                decoder.decodeFromString(listPairSerializer, it)
+            } ?: defaultValue
+        },
+        setter = { key, newValue ->
+            val serializer = ProfileManagerSerializer()
+            val pairSerializer = PairSerializer(String.serializer(), serializer)
+            val listPairSerializer = ListSerializer(pairSerializer)
+            val encoder = Json {
+                serializersModule = SerializersModule {
+                    contextual(ProfileManager::class, serializer)
+                }
+            }
+            putString(key, encoder.encodeToString(listPairSerializer, newValue))
+        }
+    )
 
     val DEFAULT_MODULE_LOCATION =
         (context.externalCacheDir ?: File(
@@ -80,49 +232,21 @@ class PreferenceManager(var context: Context) :
 
     var logsLineWrap by booleanPreference("logs_line_wrap", false)
 
-    var profiles by stringSetPreference("profiles", setOf("0:Bunny"))
+    var profiles by profileManagersPreference("profiles", listOf("Bunny" to ProfileManager()))
 
     var currentProfile by intPreference("current_profile", 0)
 
-    private var profileManagers = mutableMapOf<String, ProfileManager>()
-
-    fun getProfileManager(profile: Int) = run {
-        profileManagers.getOrPut(profile.toString()) {
-            ProfileManager(
-                context,
-                context.getSharedPreferences("profile_$profile", Context.MODE_PRIVATE)
-            )
-        }
-    }
-
-    fun getCurrentProfileManager() = getProfileManager(currentProfile)
-
-    fun getProfileIdName(profileIdx: Int) = profiles.find { it.startsWith("$profileIdx:") }
-        ?: throw IllegalArgumentException("Profile not found")
-
-    fun getProfileName(profileIdx: Int) = getProfileIdName(profileIdx).split(":", limit = 2)[1]
-
-    fun getCurrentProfileIdName() = getProfileIdName(currentProfile)
-
-    fun getCurrentProfileName() = getProfileName(currentProfile)
-
-    fun setProfileName(profileIdx: Int, name: String) {
-        profiles = profiles.toMutableSet().apply {
-            remove(getProfileIdName(profileIdx))
-            add("$profileIdx:$name")
-        }
-    }
+    fun getCurrentProfile() = profiles[currentProfile]
 
     fun setCurrentProfileName(name: String) {
-        setProfileName(currentProfile, name)
+        val profile = profiles[currentProfile].second
+        profiles = profiles.toMutableList().apply {
+            set(currentProfile, name to profile)
+        }
     }
 
-    fun addProfile(name: String) {
-        println("Hello. New profile: $name")
-        profiles = profiles.toMutableSet().apply {
-            add("${profiles.size}:$name")
-        }
-        println("Profiles: $profiles")
+    fun addProfile(name: String, profile: ProfileManager) {
+        profiles = profiles + (name to profile)
     }
 
     init {
@@ -132,12 +256,14 @@ class PreferenceManager(var context: Context) :
 
 }
 
+@Serializable
 enum class Theme(@StringRes val labelRes: Int) {
     SYSTEM(R.string.theme_system),
     LIGHT(R.string.theme_light),
     DARK(R.string.theme_dark)
 }
 
+@Serializable
 enum class UpdateCheckerDuration(@StringRes val labelRes: Int, val time: Long, val unit: TimeUnit) {
     DISABLED(R.string.duration_disabled, 0, TimeUnit.SECONDS),
     QUARTERLY(R.string.duration_fifteen_min, 15, TimeUnit.MINUTES),
@@ -149,6 +275,15 @@ enum class UpdateCheckerDuration(@StringRes val labelRes: Int, val time: Long, v
     WEEKLY(R.string.duration_weekly, 7, TimeUnit.DAYS)
 }
 
+@Serializable
+sealed class ModuleGetStrategy {
+    @Serializable
+    data class Url(val url: String) : ModuleGetStrategy()
+
+    @Serializable
+    data class File(val file: String) : ModuleGetStrategy()
+}
+
 enum class Mirror(val baseUrl: String) {
     DEFAULT("https://tracker.vendetta.rocks"),
     VENDETTA_ROCKS("https://proxy.vendetta.rocks"), // Temporarily added for compatibility
@@ -157,6 +292,7 @@ enum class Mirror(val baseUrl: String) {
     NEXPID("https://tracker.vd.nexpid.xyz")
 }
 
+@Serializable
 enum class InstallMethod(@StringRes val labelRes: Int) {
     DEFAULT(R.string.default_installer),
     SHIZUKU(R.string.shizuku_installer)

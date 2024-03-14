@@ -55,6 +55,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import dev.selfmadesystem.dmm.BuildConfig
 import dev.selfmadesystem.dmm.R
 import dev.selfmadesystem.dmm.domain.manager.PreferenceManager
+import dev.selfmadesystem.dmm.domain.manager.ProfileManager
 import dev.selfmadesystem.dmm.ui.components.SegmentedButton
 import dev.selfmadesystem.dmm.ui.screen.installer.InstallerScreen
 import dev.selfmadesystem.dmm.ui.screen.settings.SettingsScreen
@@ -228,9 +229,10 @@ class HomeScreen : Screen {
         val prefs: PreferenceManager = get()
         val profiles by remember {
             mutableStateOf(
-                prefs.profiles.toList().sortedBy {
-                    it.split(":", limit = 2)[0].toInt()
-                } + ":Create Profile..."
+                prefs.profiles + Pair(
+                    "Create New Profile",
+                    ProfileManager()
+                )
             )
         } // TODO: Add string resource
         var selectedProfile by remember { mutableIntStateOf(prefs.currentProfile) }
@@ -253,7 +255,7 @@ class HomeScreen : Screen {
                             label = "Icon Rotation"
                         )
                         Text(
-                            text = profiles[selectedProfile].split(":", limit = 2)[1]
+                            text = profiles[selectedProfile].first
                         )
                         Icon(
                             imageVector = Icons.Outlined.ExpandMore,
@@ -270,12 +272,15 @@ class HomeScreen : Screen {
                     ) {
                         profiles.forEachIndexed { index, profile ->
                             DropdownMenuItem(
-                                text = { Text(text = profile.split(":", limit = 2)[1]) },
+                                text = { Text(text = profile.first) },
                                 onClick = {
                                     assert(index < profiles.size)
                                     assert(index >= 0)
                                     if (index == profiles.size - 1) {
-                                        prefs.addProfile("New Profile")
+                                        prefs.addProfile(
+                                            "New Profile",
+                                            prefs.getCurrentProfile().second
+                                        )
                                         navigation.navigate(SettingsScreen())
                                     }
                                     selectedProfile = index

@@ -38,7 +38,8 @@ class CustomizationSettings : Screen {
     override fun Content() {
         val ctx = LocalContext.current
         val prefs: PreferenceManager = get()
-        val currentProfileName = prefs.getCurrentProfileName()
+        val currentProfile = prefs.getCurrentProfile()
+        val currentProfileName = currentProfile.first
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
         println("Current profile: $currentProfileName ${prefs.currentProfile} ${prefs.profiles}")

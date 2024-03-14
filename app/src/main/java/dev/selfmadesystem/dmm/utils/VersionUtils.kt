@@ -10,6 +10,7 @@ data class DiscordVersion(
     val type: Type
 ) : Serializable, Comparable<DiscordVersion> {
 
+    @kotlinx.serialization.Serializable
     enum class Type(val label: String, @StringRes val labelRes: Int) {
         STABLE("Stable", R.string.channel_stable),
         BETA("Beta", R.string.channel_beta),
