@@ -200,10 +200,6 @@ class PreferenceManager(var context: Context) :
 
     var packageName by stringPreference("package_name", "dev.selfmadesystem.discord")
 
-    var appName by stringPreference("app_name", "Vendetta")
-
-    var discordVersion by stringPreference("discord_version", "")
-
     var moduleVersion by stringPreference("module_version", "")
 
     var patchIcon by booleanPreference("patch_icon", true)
@@ -220,8 +216,6 @@ class PreferenceManager(var context: Context) :
 
     var theme by enumPreference("theme", Theme.SYSTEM)
 
-    var channel by enumPreference("channel", DiscordVersion.Type.STABLE)
-
     var updateDuration by enumPreference("update_duration", UpdateCheckerDuration.HOURLY)
 
     var moduleLocation by filePreference("module_location", DEFAULT_MODULE_LOCATION)
@@ -234,14 +228,27 @@ class PreferenceManager(var context: Context) :
 
     var profiles by profileManagersPreference("profiles", listOf("Bunny" to ProfileManager()))
 
-    var currentProfile by intPreference("current_profile", 0)
+    var profileIdx by intPreference("profile_idx", 0) { _, it ->
+        _currentProfile = profiles[it].second
+    }
 
-    fun getCurrentProfile() = profiles[currentProfile]
+    private var _currentProfile: ProfileManager = profiles[profileIdx].second
+
+    var currentProfile: ProfileManager
+        get() = _currentProfile
+        set(value) {
+            _currentProfile = value
+            profiles = profiles.toMutableList().apply {
+                set(profileIdx, profiles[profileIdx].first to value)
+            }
+        }
+
+    fun getCurrentProfileName() = profiles[profileIdx].first
 
     fun setCurrentProfileName(name: String) {
-        val profile = profiles[currentProfile].second
+        val profile = profiles[profileIdx].second
         profiles = profiles.toMutableList().apply {
-            set(currentProfile, name to profile)
+            set(profileIdx, name to profile)
         }
     }
 
@@ -277,11 +284,26 @@ enum class UpdateCheckerDuration(@StringRes val labelRes: Int, val time: Long, v
 
 @Serializable
 sealed class ModuleGetStrategy {
-    @Serializable
-    data class Url(val url: String) : ModuleGetStrategy()
+    companion object {
+        fun fromString(string: String): ModuleGetStrategy {
+            val (type, value) = string.split(":")
+            return when (type) {
+                "U" -> Url(value)
+                "F" -> File(value)
+                else -> throw IllegalArgumentException("Invalid module get strategy: $string")
+            }
+        }
+    }
 
     @Serializable
-    data class File(val file: String) : ModuleGetStrategy()
+    data class Url(val url: String) : ModuleGetStrategy() {
+        override fun toString(): String = "U:$url"
+    }
+
+    @Serializable
+    data class File(val file: String) : ModuleGetStrategy() {
+        override fun toString(): String = "F:$file"
+    }
 }
 
 enum class Mirror(val baseUrl: String) {

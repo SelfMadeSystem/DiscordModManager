@@ -43,11 +43,12 @@ class DeveloperSettings : Screen {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun Content() {
         val prefs: PreferenceManager = get()
+        val profile = prefs.currentProfile
         val installManager: InstallManager = get()
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
         var version by remember {
-            mutableStateOf(prefs.discordVersion)
+            mutableStateOf(profile.discordVersion)
         }
         var versionError by remember {
             mutableStateOf(false)
@@ -90,7 +91,8 @@ class DeveloperSettings : Screen {
                             versionError = true
                         } else {
                             versionError = false
-                            prefs.discordVersion = it
+                            profile.discordVersion = it
+                            prefs.currentProfile = profile
                         }
                     }
                 )

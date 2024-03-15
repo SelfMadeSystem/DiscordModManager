@@ -98,6 +98,20 @@ abstract class BasePreferenceManager(
         setter = ::putInt
     )
 
+    protected fun intPreference(
+        key: String,
+        defaultValue: Int,
+        setter: (key: String, newValue: Int) -> Unit
+    ) = Preference(
+        key = key,
+        defaultValue = defaultValue,
+        getter = ::getInt,
+        setter = { key, it ->
+            setter(key, it)
+            putInt(key, it)
+        }
+    )
+
     protected fun floatPreference(
         key: String,
         defaultValue: Float

@@ -95,8 +95,8 @@ class HomeViewModel(
         val currentVersion =
             DiscordVersion.fromVersionCode(installManager.current?.versionCode.toString()) ?: return
         val latestVersion = when {
-            prefs.discordVersion.isBlank() -> discordVersions?.get(prefs.channel)
-            else -> DiscordVersion.fromVersionCode(prefs.discordVersion)
+            prefs.currentProfile.discordVersion.isBlank() -> discordVersions?.get(prefs.currentProfile.channel)
+            else -> DiscordVersion.fromVersionCode(prefs.currentProfile.discordVersion)
         } ?: return
 
         if (latestVersion > currentVersion) {

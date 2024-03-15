@@ -29,6 +29,7 @@ class PatchManifestsStep : Step() {
         val libsApk = runner.getCompletedStep<DownloadLibsStep>().workingCopy
         val langApk = runner.getCompletedStep<DownloadLangStep>().workingCopy
         val resApk = runner.getCompletedStep<DownloadResourcesStep>().workingCopy
+        val currentProfile = preferences.currentProfile
 
         arrayOf(baseApk, libsApk, langApk, resApk).forEach { apk ->
             runner.logger.i("Reading AndroidManifest.xml from ${apk.name}")
@@ -42,7 +43,7 @@ class PatchManifestsStep : Step() {
                     ManifestPatcher.patchManifest(
                         manifestBytes = manifest,
                         packageName = preferences.packageName,
-                        appName = preferences.appName,
+                        appName = currentProfile.appName,
                         debuggable = preferences.debuggable,
                     )
                 } else {

@@ -25,12 +25,13 @@ fun ThemePreview(
     modifier: Modifier = Modifier
 ) {
     val prefs: PreferenceManager = get()
+    val profile = prefs.currentProfile
     val light = colorScheme.background.luminance() > 0.5f
     val layerModifier = Modifier.height(300.dp)
-    val iconColor = remember(prefs.patchIcon, prefs.channel) {
+    val iconColor = remember(prefs.patchIcon, profile.channel) {
         when {
             prefs.patchIcon -> Color(0xFF3AB8BA)
-            prefs.channel == DiscordVersion.Type.ALPHA -> Color(0xFFFBB33C)
+            profile.channel == DiscordVersion.Type.ALPHA -> Color(0xFFFBB33C)
             else -> Color(0xFF5865F2)
         }
     }

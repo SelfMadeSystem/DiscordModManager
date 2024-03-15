@@ -16,6 +16,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -38,11 +42,10 @@ class CustomizationSettings : Screen {
     override fun Content() {
         val ctx = LocalContext.current
         val prefs: PreferenceManager = get()
-        val currentProfile = prefs.getCurrentProfile()
-        val currentProfileName = currentProfile.first
-        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+        var profile by remember { mutableStateOf(prefs.currentProfile) }
 
-        println("Current profile: $currentProfileName ${prefs.currentProfile} ${prefs.profiles}")
+        val currentProfileName = prefs.getCurrentProfileName()
+        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
         Scaffold(
             topBar = { TitleBar(scrollBehavior) },
@@ -65,13 +68,14 @@ class CustomizationSettings : Screen {
 
                 SettingsTextField(
                     label = stringResource(R.string.settings_app_name),
-                    pref = prefs.appName,
+                    pref = profile.appName,
                     onPrefChange = {
-                        prefs.appName = it
+                        profile = profile.copy(appName = it)
+                        prefs.currentProfile = profile
                     }
                 )
 
-                SettingsSwitch(
+                SettingsSwitch( // TODO: Switch over to better icon management
                     label = stringResource(R.string.settings_app_icon),
                     secondaryLabel = stringResource(R.string.settings_app_icon_description),
                     pref = prefs.patchIcon,
@@ -82,12 +86,13 @@ class CustomizationSettings : Screen {
 
                 SettingsItemChoice(
                     label = stringResource(R.string.settings_channel),
-                    pref = prefs.channel,
+                    pref = profile.channel,
                     labelFactory = {
                         ctx.getString(it.labelRes)
                     },
                     onPrefChange = {
-                        prefs.channel = it
+                        profile = profile.copy(channel = it)
+                        prefs.currentProfile = profile
                     }
                 )
             }

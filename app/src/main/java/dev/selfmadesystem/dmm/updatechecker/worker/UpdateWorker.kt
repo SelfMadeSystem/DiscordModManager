@@ -24,12 +24,12 @@ class UpdateWorker(
     val installManager: InstallManager by inject()
 
     override suspend fun doWork(): Result {
-        if (prefs.discordVersion.isNotBlank()) return Result.success()
+        if (prefs.currentProfile.discordVersion.isNotBlank()) return Result.success()
         return when (val res = api.getLatestDiscordVersions()) {
             is ApiResponse.Success -> {
                 val currentVersion =
                     DiscordVersion.fromVersionCode(installManager.current?.versionCode.toString())
-                val latestVersion = res.data[prefs.channel]
+                val latestVersion = res.data[prefs.currentProfile.channel]
 
                 if (latestVersion == null || currentVersion == null) return Result.failure()
 

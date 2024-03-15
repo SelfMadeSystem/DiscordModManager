@@ -35,8 +35,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -76,17 +76,22 @@ class HomeScreen : Screen {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val prefs: PreferenceManager = get()
+        var profile by remember { mutableStateOf(prefs.currentProfile) }
         val viewModel: HomeViewModel = getScreenModel()
+
+        LaunchedEffect(prefs.profileIdx) {
+            profile = prefs.currentProfile
+        }
 
         val currentVersion = remember {
             DiscordVersion.fromVersionCode(viewModel.installManager.current?.versionCode.toString())
         }
 
         val latestVersion =
-            remember(prefs.discordVersion, viewModel.discordVersions, prefs.channel) {
+            remember(profile.discordVersion, viewModel.discordVersions, profile.channel) {
                 when {
-                    prefs.discordVersion.isBlank() -> viewModel.discordVersions?.get(prefs.channel)
-                    else -> DiscordVersion.fromVersionCode(prefs.discordVersion)
+                    profile.discordVersion.isBlank() -> viewModel.discordVersions?.get(profile.channel)
+                    else -> DiscordVersion.fromVersionCode(profile.discordVersion)
                 }
             }
 
@@ -124,12 +129,12 @@ class HomeScreen : Screen {
             ) {
                 AppIcon(
                     customIcon = prefs.patchIcon,
-                    releaseChannel = prefs.channel,
+                    releaseChannel = profile.channel,
                     modifier = Modifier.size(60.dp)
                 )
 
                 Text(
-                    text = prefs.appName,
+                    text = profile.appName,
                     style = MaterialTheme.typography.titleLarge
                 )
 
@@ -150,7 +155,7 @@ class HomeScreen : Screen {
                     }
 
                     val latestLabel =
-                        if (prefs.discordVersion.isNotBlank()) R.string.version_target else R.string.version_latest
+                        if (profile.discordVersion.isNotBlank()) R.string.version_target else R.string.version_latest
 
                     AnimatedVisibility(visible = latestVersion != null) {
                         Text(
@@ -235,7 +240,8 @@ class HomeScreen : Screen {
                 )
             )
         } // TODO: Add string resource
-        var selectedProfile by remember { mutableIntStateOf(prefs.currentProfile) }
+        var profileName by remember { mutableStateOf(prefs.getCurrentProfileName()) }
+        var currentProfile by remember { mutableStateOf(prefs.currentProfile) }
         var expanded by remember { mutableStateOf(false) }
         val navigation = LocalNavigator.currentOrThrow
 
@@ -255,7 +261,7 @@ class HomeScreen : Screen {
                             label = "Icon Rotation"
                         )
                         Text(
-                            text = profiles[selectedProfile].first
+                            text = profileName
                         )
                         Icon(
                             imageVector = Icons.Outlined.ExpandMore,
@@ -279,12 +285,13 @@ class HomeScreen : Screen {
                                     if (index == profiles.size - 1) {
                                         prefs.addProfile(
                                             "New Profile",
-                                            prefs.getCurrentProfile().second
+                                            prefs.currentProfile
                                         )
                                         navigation.navigate(SettingsScreen())
                                     }
-                                    selectedProfile = index
-                                    prefs.currentProfile = index
+                                    prefs.profileIdx = index
+                                    currentProfile = prefs.currentProfile
+                                    profileName = prefs.getCurrentProfileName()
                                     expanded = false
                                 }
                             )
