@@ -198,13 +198,9 @@ class PreferenceManager(var context: Context) :
             Environment.DIRECTORY_DOWNLOADS
         ).resolve("VendettaManager").also { it.mkdirs() }).resolve("vendetta.apk")
 
-    var packageName by stringPreference("package_name", "dev.selfmadesystem.discord")
-
     var moduleVersion by stringPreference("module_version", "")
 
     var patchIcon by booleanPreference("patch_icon", true)
-
-    var debuggable by booleanPreference("debuggable", false)
 
     var mirror by enumPreference("mirror", Mirror.DEFAULT)
 

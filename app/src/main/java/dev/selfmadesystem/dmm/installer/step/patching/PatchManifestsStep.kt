@@ -42,13 +42,13 @@ class PatchManifestsStep : Step() {
                 val patchedManifestBytes = if (apk == baseApk) {
                     ManifestPatcher.patchManifest(
                         manifestBytes = manifest,
-                        packageName = preferences.packageName,
+                        packageName = currentProfile.packageName,
                         appName = currentProfile.appName,
-                        debuggable = preferences.debuggable,
+                        debuggable = currentProfile.debuggable,
                     )
                 } else {
                     runner.logger.i("Changing package name in ${apk.name}")
-                    ManifestPatcher.renamePackage(manifest, preferences.packageName)
+                    ManifestPatcher.renamePackage(manifest, currentProfile.packageName)
                 }
 
                 runner.logger.i("Deleting old AndroidManifest.xml in ${apk.name}")

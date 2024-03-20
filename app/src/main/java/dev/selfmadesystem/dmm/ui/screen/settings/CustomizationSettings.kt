@@ -28,6 +28,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import dev.selfmadesystem.dmm.R
+import dev.selfmadesystem.dmm.domain.manager.InstallManager
 import dev.selfmadesystem.dmm.domain.manager.PreferenceManager
 import dev.selfmadesystem.dmm.ui.components.settings.SettingsItemChoice
 import dev.selfmadesystem.dmm.ui.components.settings.SettingsSwitch
@@ -41,6 +42,7 @@ class CustomizationSettings : Screen {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun Content() {
         val ctx = LocalContext.current
+        val installManager: InstallManager = get()
         val prefs: PreferenceManager = get()
         var profile by remember { mutableStateOf(prefs.currentProfile) }
 
@@ -71,6 +73,15 @@ class CustomizationSettings : Screen {
                     pref = profile.appName,
                     onPrefChange = {
                         profile = profile.copy(appName = it)
+                        prefs.currentProfile = profile
+                    }
+                )
+
+                SettingsTextField(
+                    label = stringResource(R.string.settings_package_name),
+                    pref = profile.packageName,
+                    onPrefChange = {
+                        profile = profile.copy(packageName = it)
                         prefs.currentProfile = profile
                     }
                 )

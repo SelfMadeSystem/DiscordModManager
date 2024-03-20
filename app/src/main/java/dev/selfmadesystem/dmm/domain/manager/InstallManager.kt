@@ -24,11 +24,12 @@ class InstallManager(
     }
 
     fun getInstalled() {
+        val currentProfile = prefs.currentProfile
         current = try {
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
                     context.packageManager.getPackageInfo(
-                        prefs.packageName.ifBlank { "dev.selfmadesystem.discord" },
+                        currentProfile.packageName.ifBlank { "dev.selfmadesystem.discord" },
                         PackageManager.PackageInfoFlags.of(
                             0L
                         )
@@ -37,7 +38,7 @@ class InstallManager(
 
                 else -> {
                     context.packageManager.getPackageInfo(
-                        prefs.packageName.ifBlank { "dev.selfmadesystem.discord" },
+                        currentProfile.packageName.ifBlank { "dev.selfmadesystem.discord" },
                         0
                     )
                 }

@@ -27,7 +27,6 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import dev.selfmadesystem.dmm.R
-import dev.selfmadesystem.dmm.domain.manager.InstallManager
 import dev.selfmadesystem.dmm.domain.manager.PreferenceManager
 import dev.selfmadesystem.dmm.ui.components.settings.SettingsButton
 import dev.selfmadesystem.dmm.ui.components.settings.SettingsSwitch
@@ -44,7 +43,6 @@ class DeveloperSettings : Screen {
     override fun Content() {
         val prefs: PreferenceManager = get()
         val profile = prefs.currentProfile
-        val installManager: InstallManager = get()
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
         var version by remember {
@@ -52,6 +50,9 @@ class DeveloperSettings : Screen {
         }
         var versionError by remember {
             mutableStateOf(false)
+        }
+        var debuggable by remember {
+            mutableStateOf(profile.debuggable)
         }
 
         val supportingText = when {
@@ -72,15 +73,6 @@ class DeveloperSettings : Screen {
                     .padding(bottom = DimenUtils.navBarPadding)
             ) {
                 SettingsTextField(
-                    label = stringResource(R.string.settings_package_name),
-                    pref = prefs.packageName,
-                    onPrefChange = {
-                        prefs.packageName = it
-                        installManager.getInstalled()
-                    }
-                )
-
-                SettingsTextField(
                     label = stringResource(R.string.settings_version),
                     pref = version,
                     error = versionError,
@@ -100,8 +92,12 @@ class DeveloperSettings : Screen {
                 SettingsSwitch(
                     label = stringResource(R.string.settings_debuggable),
                     secondaryLabel = stringResource(R.string.settings_debuggable_description),
-                    pref = prefs.debuggable,
-                    onPrefChange = { prefs.debuggable = it }
+                    pref = debuggable,
+                    onPrefChange = {
+                        debuggable = it
+                        profile.debuggable = it
+                        prefs.currentProfile = profile
+                    }
                 )
 
                 SettingsTextField(

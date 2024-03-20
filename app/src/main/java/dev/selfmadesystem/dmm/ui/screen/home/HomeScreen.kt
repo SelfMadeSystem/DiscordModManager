@@ -54,6 +54,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import dev.selfmadesystem.dmm.BuildConfig
 import dev.selfmadesystem.dmm.R
+import dev.selfmadesystem.dmm.domain.manager.InstallManager
 import dev.selfmadesystem.dmm.domain.manager.PreferenceManager
 import dev.selfmadesystem.dmm.domain.manager.ProfileManager
 import dev.selfmadesystem.dmm.ui.components.SegmentedButton
@@ -244,6 +245,7 @@ class HomeScreen : Screen {
         var currentProfile by remember { mutableStateOf(prefs.currentProfile) }
         var expanded by remember { mutableStateOf(false) }
         val navigation = LocalNavigator.currentOrThrow
+        val installManager: InstallManager = get()
 
         TopAppBar(
             title = {
@@ -293,6 +295,8 @@ class HomeScreen : Screen {
                                     currentProfile = prefs.currentProfile
                                     profileName = prefs.getCurrentProfileName()
                                     expanded = false
+
+                                    installManager.getInstalled()
                                 }
                             )
                         }
