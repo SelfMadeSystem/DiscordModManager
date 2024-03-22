@@ -6,6 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import dev.selfmadesystem.dmm.domain.manager.InstallManager
 import dev.selfmadesystem.dmm.domain.manager.PreferenceManager
+import dev.selfmadesystem.dmm.domain.manager.ProfileManager
 import dev.selfmadesystem.dmm.domain.repository.RestRepository
 import dev.selfmadesystem.dmm.network.utils.ApiResponse
 import dev.selfmadesystem.dmm.updatechecker.reciever.UpdateBroadcastReceiver
@@ -23,13 +24,13 @@ class UpdateWorker(
     val prefs: PreferenceManager by inject()
     val installManager: InstallManager by inject()
 
-    override suspend fun doWork(): Result {
-        if (prefs.currentProfile.discordVersion.isNotBlank()) return Result.success()
+    suspend fun doWorkForProfile(profile: ProfileManager): Result {
+        if (profile.discordVersion.isNotBlank()) return Result.success()
         return when (val res = api.getLatestDiscordVersions()) {
             is ApiResponse.Success -> {
                 val currentVersion =
                     DiscordVersion.fromVersionCode(installManager.current?.versionCode.toString())
-                val latestVersion = res.data[prefs.currentProfile.channel]
+                val latestVersion = res.data[profile.channel]
 
                 if (latestVersion == null || currentVersion == null) return Result.failure()
 
@@ -48,6 +49,17 @@ class UpdateWorker(
 
             else -> Result.failure()
         }
+    }
+
+    override suspend fun doWork(): Result {
+        val profiles = prefs.profiles
+        if (profiles.isEmpty()) return Result.failure()
+
+        for (profile in profiles) {
+            doWorkForProfile(profile.second)
+        }
+
+        return Result.success()
     }
 
 }

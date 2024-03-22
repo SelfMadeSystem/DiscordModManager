@@ -14,29 +14,6 @@ class DownloadManager(
     private val context: Context,
     private val prefs: PreferenceManager
 ) {
-
-    suspend fun downloadDiscordApk(
-        version: String,
-        out: File,
-        onProgressUpdate: (Float?) -> Unit
-    ): DownloadResult =
-        download("${prefs.mirror.baseUrl}/tracker/download/$version/base", out, onProgressUpdate)
-
-    suspend fun downloadSplit(
-        version: String,
-        split: String,
-        out: File,
-        onProgressUpdate: (Float?) -> Unit
-    ): DownloadResult =
-        download("${prefs.mirror.baseUrl}/tracker/download/$version/$split", out, onProgressUpdate)
-
-    suspend fun downloadVendetta(out: File, onProgressUpdate: (Float?) -> Unit) =
-        download(
-            "https://github.com/vendetta-mod/VendettaXposed/releases/latest/download/app-release.apk",
-            out,
-            onProgressUpdate
-        )
-
     suspend fun downloadUpdate(out: File) =
         download(
             "https://github.com/vendetta-mod/VendettaManager/releases/latest/download/Manager.apk",
